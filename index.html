@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nakshatra Sky / နက္ခတ္တ ကောင်းကင်ပြတိုက် — Deep-Sky & Astronomy Image Explorer</title>
+  <meta name="description" content="Explore high-resolution deep-sky astrophotography, trace ancient constellations, and inspect celestial imagery across visible and infrared wavelengths. / နက်ရှိုင်းသောအာကာသ ဓာတ်ပုံများနှင့် ရှေးဟောင်းနက္ခတ်တာရာများကို လေ့လာစူးစမ်းပါ။" />
+  <meta name="theme-color" content="#09090b" />
+
+  <!-- Google Fonts: Instrument Serif, Inter, JetBrains Mono, Noto Sans Myanmar & Noto Serif Myanmar -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+Myanmar:wght@300;400;500;600;700&family=Noto+Serif+Myanmar:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Instrument Serif"', '"Noto Serif Myanmar"', 'Georgia', 'serif'],
+            sans: ['"Inter"', '"Pyidaungsu"', '"Noto Sans Myanmar"', '-apple-system', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+          },
+          colors: {
+            cosmos: '#09090b',
+            obsidian: '#0e0e12',
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Stylesheet with Pyidaungsu & Myanmar line-height engine -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="bg-[#09090b] text-[#fafafa] antialiased selection:bg-white/20 selection:text-white">
+
+  <!-- =======================================================================
+       1. ATMOSPHERIC FULL-SCREEN HERO SECTION
+       ======================================================================= -->
+  <header class="min-h-screen relative isolate overflow-hidden flex flex-col justify-between starfield-texture">
+
+    <!-- Crossfade Wavelength Background Layers -->
+    <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+      <!-- Layer 1: Visible Spectrum (Default) -->
+      <div 
+        id="heroBgVisible" 
+        class="wavelength-layer active"
+        style="background-image: url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=2400&q=85');"
+        aria-hidden="true"
+      ></div>
+      <!-- Layer 2: Infrared (JWST) -->
+      <div 
+        id="heroBgInfrared" 
+        class="wavelength-layer inactive"
+        style="background-image: url('https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&w=2400&q=85');"
+        aria-hidden="true"
+      ></div>
+      <!-- Layer 3: Deep Nebula & X-Ray Composite -->
+      <div 
+        id="heroBgNebula" 
+        class="wavelength-layer inactive"
+        style="background-image: url('https://images.unsplash.com/photo-1543722530-d2c3201371e7?auto=format&fit=crop&w=2400&q=85');"
+        aria-hidden="true"
+      ></div>
+
+      <!-- Celestial Vignette & Radial Light Mask -->
+      <div class="absolute inset-0 celestial-vignette"></div>
+      <div class="absolute inset-0 nebula-glow-overlay"></div>
+    </div>
+
+    <!-- FLOATING PILL NAVBAR -->
+    <nav class="relative z-30 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2" aria-label="Main Navigation">
+      <div class="flex items-center justify-between">
+        
+        <!-- Brand Logo with Custom Inline SVG Constellation Mark -->
+        <a href="#" class="group flex items-center gap-3 focus:outline-none" aria-label="Nakshatra Sky Home">
+          <div class="w-10 h-10 rounded-full bg-white/10 ring-1 ring-white/20 backdrop-blur-md flex items-center justify-center transition-transform group-hover:scale-105">
+            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9" class="stroke-white/30"></circle>
+              <circle cx="12" cy="12" r="3" class="stroke-amber-300"></circle>
+              <line x1="12" y1="3" x2="12" y2="6"></line>
+              <line x1="12" y1="18" x2="12" y2="21"></line>
+              <line x1="3" y1="12" x2="6" y2="12"></line>
+              <line x1="18" y1="12" x2="21" y2="12"></line>
+              <circle cx="16" cy="8" r="1" class="fill-white stroke-none"></circle>
+              <circle cx="8" cy="16" r="1" class="fill-white stroke-none"></circle>
+            </svg>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-serif text-2xl tracking-tight text-white leading-none">
+              <span data-i18n="brandName">Nakshatra</span> <span data-i18n="brandSky" class="italic font-normal text-zinc-300">Sky</span>
+            </span>
+            <span data-i18n="brandSub" class="font-mono text-[9px] tracking-widest text-zinc-400 uppercase mt-1">Deep-Sky Atlas</span>
+          </div>
+        </a>
+
+        <!-- Center Glassmorphism Pill Container (Desktop) -->
+        <div class="hidden md:flex items-center rounded-full bg-white/5 px-2 py-1.5 ring-1 ring-white/10 backdrop-blur-md shadow-2xl">
+          <a href="#hero" data-i18n="navSkyMap" class="nav-link-pill px-3.5 py-1.5 text-xs font-medium text-zinc-300 hover:text-white transition-colors">Sky Map</a>
+          <a href="#gallery" data-i18n="navGallery" class="nav-link-pill px-3.5 py-1.5 text-xs font-medium text-zinc-300 hover:text-white transition-colors">Deep-Sky Gallery</a>
+          <a href="#gallery" data-nav-filter="nebulae" data-i18n="navNebulaeGalaxies" class="nav-link-pill px-3.5 py-1.5 text-xs font-medium text-zinc-300 hover:text-white transition-colors">Nebulae & Galaxies</a>
+          <a href="#constellations" data-i18n="navConstellations" class="nav-link-pill px-3.5 py-1.5 text-xs font-medium text-zinc-300 hover:text-white transition-colors">Constellations</a>
+        </div>
+
+        <!-- Desktop Right: Language Switcher Pill + Clock + Launch CTA -->
+        <div class="hidden md:flex items-center gap-3">
+          
+          <!-- BILINGUAL LANGUAGE SWITCHER PILL (EN / မြန်မာ) -->
+          <div class="inline-flex items-center p-0.5 rounded-full bg-white/5 ring-1 ring-white/15 backdrop-blur-md shadow-lg" role="group" aria-label="Language Selector">
+            <button 
+              type="button" 
+              data-set-lang="en" 
+              class="lang-btn active px-2.5 py-1 rounded-full text-[11px] font-sans font-medium transition-all"
+              aria-label="Switch to English"
+            >
+              EN
+            </button>
+            <button 
+              type="button" 
+              data-set-lang="my" 
+              class="lang-btn px-2.5 py-1 rounded-full text-[11px] font-sans font-medium transition-all"
+              aria-label="မြန်မာဘာသာသို့ ပြောင်းရန်"
+            >
+              မြန်မာ
+            </button>
+          </div>
+
+          <!-- UTC Clock -->
+          <div class="hidden lg:flex items-center gap-2 text-xs font-mono text-zinc-400 px-3 py-1.5 rounded-full bg-white/5 ring-1 ring-white/10">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="liveUtcClock">00:00:00 UTC</span>
+          </div>
+
+          <!-- Primary White Launch Pill CTA -->
+          <a 
+            href="#gallery" 
+            class="group inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium tracking-wide bg-white text-zinc-950 hover:bg-zinc-200 shadow-md transition-all duration-200"
+          >
+            <span data-i18n="ctaLaunch">Launch Sky Map</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform"></i>
+          </a>
+        </div>
+
+        <!-- Mobile Controls (Language pill + Hamburger) -->
+        <div class="flex items-center gap-2 md:hidden">
+          <!-- Mobile Language Switcher Pill -->
+          <div class="inline-flex items-center p-0.5 rounded-full bg-white/5 ring-1 ring-white/15 backdrop-blur-md" role="group" aria-label="Language Selector">
+            <button 
+              type="button" 
+              data-set-lang="en" 
+              class="lang-btn active px-2 py-0.5 rounded-full text-[10px] font-sans font-medium transition-all"
+              aria-label="English"
+            >
+              EN
+            </button>
+            <button 
+              type="button" 
+              data-set-lang="my" 
+              class="lang-btn px-2 py-0.5 rounded-full text-[10px] font-sans font-medium transition-all"
+              aria-label="မြန်မာ"
+            >
+              မြန်မာ
+            </button>
+          </div>
+
+          <!-- Hamburger Button -->
+          <button 
+            id="mobileMenuBtn" 
+            type="button" 
+            class="p-2 rounded-full bg-white/5 ring-1 ring-white/10 backdrop-blur-md text-zinc-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/40"
+            aria-label="Toggle navigation menu" 
+            aria-expanded="false"
+          >
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Dropdown Drawer -->
+      <div 
+        id="mobileNavDrawer" 
+        class="hidden md:hidden mt-4 p-5 rounded-2xl glass-panel space-y-4 animate-fade-slide"
+      >
+        <div class="flex flex-col space-y-2">
+          <a href="#hero" data-i18n="navSkyMap" class="mobile-nav-link text-sm font-medium text-zinc-300 hover:text-white py-1">Sky Map</a>
+          <a href="#gallery" data-i18n="navGallery" class="mobile-nav-link text-sm font-medium text-zinc-300 hover:text-white py-1">Deep-Sky Gallery</a>
+          <a href="#gallery" data-nav-filter="nebulae" data-i18n="navNebulaeGalaxies" class="mobile-nav-link text-sm font-medium text-zinc-300 hover:text-white py-1">Nebulae & Galaxies</a>
+          <a href="#constellations" data-i18n="navConstellations" class="mobile-nav-link text-sm font-medium text-zinc-300 hover:text-white py-1">Constellations</a>
+        </div>
+        <div class="pt-3 border-t border-white/10 flex flex-col gap-3">
+          <div class="flex items-center justify-between text-xs font-mono text-zinc-400">
+            <span>Sidereal Time</span>
+            <span id="liveSiderealClock">LST 00h 00m</span>
+          </div>
+          <a 
+            href="#gallery" 
+            data-i18n="ctaLaunch"
+            class="mobile-nav-link text-center px-4 py-2.5 rounded-full text-xs font-medium bg-white text-zinc-950 hover:bg-zinc-200"
+          >
+            Launch Sky Map
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- HERO MAIN CONTENT (Centered atmospheric editorial layout) -->
+    <div id="hero" class="relative z-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center flex flex-col items-center justify-center flex-1">
+      
+      <!-- Top Pill Badge -->
+      <div class="animate-fade-slide anim-delay-1 inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/5 ring-1 ring-white/15 backdrop-blur-md mb-8 hover:ring-white/30 transition-all">
+        <span data-i18n="liveDataBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-medium tracking-wider bg-white text-zinc-950 uppercase">
+          Live Data
+        </span>
+        <span data-i18n="badgeSubtitle" class="text-xs text-zinc-300 font-sans tracking-wide">
+          Explore High-Res Nebulae, Galaxies & Night Sky Maps
+        </span>
+      </div>
+
+      <!-- Main Display Headline -->
+      <h1 data-i18n="heroTitle" class="animate-fade-slide anim-delay-2 hero-display-title text-4xl sm:text-6xl lg:text-7xl font-normal text-white max-w-4xl tracking-tight">
+        Explore the <span class="italic text-zinc-300">Hidden</span> Wonders of the Night Sky
+      </h1>
+
+      <!-- Refined Subtitle -->
+      <p data-i18n="heroSubtitle" class="animate-fade-slide anim-delay-3 text-base sm:text-lg lg:text-xl text-zinc-400 font-sans max-w-2xl mt-6 leading-relaxed font-normal">
+        Inspect deep-sky astrophotography, trace ancient constellations, and analyze high-resolution celestial imagery captured across visible and infrared wavelengths.
+      </p>
+
+      <!-- INTERACTIVE WAVELENGTH SWITCHER PILL -->
+      <div class="animate-fade-slide anim-delay-4 mt-8 flex flex-col items-center gap-3">
+        <div class="inline-flex items-center p-1 rounded-full bg-zinc-950/70 ring-1 ring-white/15 backdrop-blur-xl shadow-2xl" role="tablist" aria-label="Wavelength Spectrograph Modes">
+          <button 
+            type="button" 
+            data-wavelength="visible" 
+            data-i18n="wavelengthVisible"
+            class="px-4 py-2 rounded-full text-xs font-medium font-sans tracking-wide transition-all duration-200 bg-white text-zinc-950 shadow-sm"
+            aria-pressed="true"
+          >
+            Visible Spectrum
+          </button>
+          <button 
+            type="button" 
+            data-wavelength="infrared" 
+            data-i18n="wavelengthInfrared"
+            class="px-4 py-2 rounded-full text-xs font-medium font-sans tracking-wide transition-all duration-200 text-zinc-300 hover:text-white hover:bg-white/10"
+            aria-pressed="false"
+          >
+            Infrared (JWST)
+          </button>
+          <button 
+            type="button" 
+            data-wavelength="deepnebula" 
+            data-i18n="wavelengthNebula"
+            class="px-4 py-2 rounded-full text-xs font-medium font-sans tracking-wide transition-all duration-200 text-zinc-300 hover:text-white hover:bg-white/10"
+            aria-pressed="false"
+          >
+            Deep Nebula
+          </button>
+        </div>
+
+        <!-- Dynamic Live Coordinate Readout for Active Wavelength -->
+        <div id="liveTelemetryBadge" class="text-xs text-zinc-400 font-mono py-1 px-3 rounded-full bg-white/5 ring-1 ring-white/10">
+          <span class="inline-flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+            <span>RA 05h 35m 17s</span>
+            <span class="text-zinc-600">·</span>
+            <span>Dec -05° 23′ 28″</span>
+            <span class="text-zinc-600 hidden sm:inline">·</span>
+            <span class="text-zinc-400 hidden sm:inline">λ 400–700 nm Optical Broadband</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="animate-fade-slide anim-delay-5 mt-10 flex flex-wrap items-center justify-center gap-4">
+        <a 
+          href="#gallery" 
+          class="inline-flex items-center gap-2.5 px-6 py-3 rounded-full text-sm font-medium tracking-wide bg-white text-zinc-950 hover:bg-zinc-200 shadow-xl hover:scale-[1.02] transition-all duration-200"
+        >
+          <i data-lucide="telescope" class="w-4 h-4"></i>
+          <span data-i18n="ctaExplore">Explore Sky Atlas</span>
+        </a>
+        <a 
+          href="#gallery" 
+          data-nav-filter="nebulae"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium tracking-wide text-zinc-300 glass-pill hover:text-white hover:scale-[1.02] transition-all duration-200"
+        >
+          <span data-i18n="ctaViewNebula">View Nebula Gallery</span>
+          <i data-lucide="arrow-down" class="w-4 h-4"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- OBSERVATORY & OPEN-SKY DATA STRIP (Bottom 5-column strip) -->
+    <section id="observatories" class="relative z-20 w-full border-t border-white/10 bg-zinc-950/60 backdrop-blur-md py-6 px-4 sm:px-6 lg:px-8" aria-label="Partner Observatories & Sky Surveys">
+      <div class="max-w-7xl mx-auto">
+        <p data-i18n="partnerTitle" class="text-center font-mono text-[10px] uppercase tracking-widest text-zinc-400 mb-4">
+          Open-Sky Astrophotography & Mission Archives Telemetry
+        </p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 items-center justify-center text-center">
+          
+          <!-- Badge 1: NASA SkyView -->
+          <div class="flex items-center justify-center gap-2.5 px-3 py-2 rounded-xl bg-white/[0.03] ring-1 ring-white/5 hover:bg-white/[0.06] transition-colors">
+            <svg class="w-4 h-4 text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="m4.93 4.93 4.24 4.24"></path>
+              <path d="m14.83 9.17 4.24-4.24"></path>
+              <path d="m14.83 14.83 4.24 4.24"></path>
+              <path d="m9.17 14.83-4.24 4.24"></path>
+              <circle cx="12" cy="12" r="4"></circle>
+            </svg>
+            <div class="text-left">
+              <div data-i18n="obs1Title" class="text-xs font-medium text-zinc-200">NASA SkyView</div>
+              <div data-i18n="obs1Sub" class="text-[10px] font-mono text-zinc-400">Virtual Observatory</div>
+            </div>
+          </div>
+
+          <!-- Badge 2: ESA / Hubble -->
+          <div class="flex items-center justify-center gap-2.5 px-3 py-2 rounded-xl bg-white/[0.03] ring-1 ring-white/5 hover:bg-white/[0.06] transition-colors">
+            <svg class="w-4 h-4 text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2v20"></path>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+            <div class="text-left">
+              <div data-i18n="obs2Title" class="text-xs font-medium text-zinc-200">ESA / Hubble</div>
+              <div data-i18n="obs2Sub" class="text-[10px] font-mono text-zinc-400">Cycle 32 Heritage</div>
+            </div>
+          </div>
+
+          <!-- Badge 3: JWST Archive -->
+          <div class="flex items-center justify-center gap-2.5 px-3 py-2 rounded-xl bg-white/[0.03] ring-1 ring-white/5 hover:bg-white/[0.06] transition-colors">
+            <svg class="w-4 h-4 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 2 8.5 2 15.5 12 22 22 15.5 22 8.5 12 2"></polygon>
+              <line x1="12" y1="22" x2="12" y2="15.5"></line>
+              <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
+              <polyline points="2 15.5 12 8.5 22 15.5"></polyline>
+              <line x1="12" y1="2" x2="12" y2="8.5"></line>
+            </svg>
+            <div class="text-left">
+              <div data-i18n="obs3Title" class="text-xs font-medium text-zinc-200">JWST Archive</div>
+              <div data-i18n="obs3Sub" class="text-[10px] font-mono text-zinc-400">MAST Multi-Mission</div>
+            </div>
+          </div>
+
+          <!-- Badge 4: Sloan Digital Sky (SDSS) -->
+          <div class="flex items-center justify-center gap-2.5 px-3 py-2 rounded-xl bg-white/[0.03] ring-1 ring-white/5 hover:bg-white/[0.06] transition-colors">
+            <svg class="w-4 h-4 text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"></path>
+              <path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9"></path>
+            </svg>
+            <div class="text-left">
+              <div data-i18n="obs4Title" class="text-xs font-medium text-zinc-200">Sloan Digital Sky</div>
+              <div data-i18n="obs4Sub" class="text-[10px] font-mono text-zinc-400">SDSS-V Spectrograph</div>
+            </div>
+          </div>
+
+          <!-- Badge 5: IAU Star Catalog -->
+          <div class="col-span-2 sm:col-span-1 flex items-center justify-center gap-2.5 px-3 py-2 rounded-xl bg-white/[0.03] ring-1 ring-white/5 hover:bg-white/[0.06] transition-colors">
+            <svg class="w-4 h-4 text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            <div class="text-left">
+              <div data-i18n="obs5Title" class="text-xs font-medium text-zinc-200">IAU Star Catalog</div>
+              <div data-i18n="obs5Sub" class="text-[10px] font-mono text-zinc-400">Standard Epoch J2000</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </header>
+
+  <!-- =======================================================================
+       2. INTERACTIVE DEEP-SKY IMAGE EXPLORER GRID
+       ======================================================================= -->
+  <main id="gallery" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative z-10">
+    
+    <!-- Section Header & Controls -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-white/10">
+      <div>
+        <div class="inline-flex items-center gap-2 text-xs font-mono text-zinc-400 mb-2">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-zinc-400"></i>
+          <span data-i18n="galleryBadge">Curated Celestial Survey</span>
+          <span class="text-zinc-600">/</span>
+          <span id="objectCountLabel" class="text-zinc-300">Loading catalog...</span>
+        </div>
+        <h2 data-i18n="galleryHeading" class="font-serif text-3xl sm:text-5xl text-zinc-100 tracking-tight">
+          Deep-Sky Astronomical Catalog
+        </h2>
+        <p data-i18n="galleryDesc" class="text-sm text-zinc-400 font-sans mt-2 max-w-xl">
+          High-resolution imagery cataloged with scientific telemetry, galactic coordinates, apparent magnitudes, and observing recommendations.
+        </p>
+      </div>
+
+      <!-- Quick Search & Sort Filter Inputs -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+        
+        <!-- Search bar -->
+        <div class="relative min-w-[240px]">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none"></i>
+          <input 
+            type="search" 
+            id="searchInput" 
+            placeholder="Search M42, Carina, NGC..." 
+            data-i18n="searchPlaceholder"
+            class="w-full bg-zinc-900/80 border border-white/10 rounded-full pl-10 pr-9 py-2 text-xs font-sans text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
+            aria-label="Search celestial catalog"
+          />
+          <button 
+            type="button" 
+            id="clearSearchBtn" 
+            class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 p-0.5" 
+            aria-label="Clear search query"
+          >
+            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <!-- Sort dropdown -->
+        <div class="relative">
+          <select 
+            id="sortSelect" 
+            class="w-full sm:w-auto bg-zinc-900/80 border border-white/10 rounded-full px-4 py-2 text-xs font-sans text-zinc-300 focus:outline-none focus:border-white/30 cursor-pointer transition-colors"
+            aria-label="Sort objects by"
+          >
+            <option value="featured" data-i18n="sortFeatured">Sort: Featured Objects</option>
+            <option value="distance-asc" data-i18n="sortDistAsc">Distance: Nearest First</option>
+            <option value="distance-desc" data-i18n="sortDistDesc">Distance: Furthest First</option>
+            <option value="magnitude-asc" data-i18n="sortMagAsc">Brightness: Brightest First</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Filter Tabs -->
+    <div class="mt-6 flex flex-wrap items-center gap-2" role="tablist" aria-label="Celestial Object Categories">
+      <button 
+        type="button" 
+        data-filter="all" 
+        data-i18n="filterAll"
+        class="px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-200 bg-white text-zinc-950 shadow-sm"
+        role="tab" 
+        aria-selected="true"
+      >
+        All Objects
+      </button>
+      <button 
+        type="button" 
+        data-filter="nebulae" 
+        data-i18n="filterNebulae"
+        class="px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-200 text-zinc-300 hover:text-white hover:bg-white/10"
+        role="tab" 
+        aria-selected="false"
+      >
+        Nebulae
+      </button>
+      <button 
+        type="button" 
+        data-filter="galaxies" 
+        data-i18n="filterGalaxies"
+        class="px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-200 text-zinc-300 hover:text-white hover:bg-white/10"
+        role="tab" 
+        aria-selected="false"
+      >
+        Galaxies
+      </button>
+      <button 
+        type="button" 
+        data-filter="clusters" 
+        data-i18n="filterClusters"
+        class="px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-200 text-zinc-300 hover:text-white hover:bg-white/10"
+        role="tab" 
+        aria-selected="false"
+      >
+        Star Clusters
+      </button>
+    </div>
+
+    <!-- Empty State Container -->
+    <div id="noResultsMessage" class="hidden py-24 text-center">
+      <div class="w-14 h-14 rounded-full bg-white/5 ring-1 ring-white/10 flex items-center justify-center mx-auto mb-4 text-zinc-500">
+        <i data-lucide="compass" class="w-6 h-6"></i>
+      </div>
+      <h3 data-i18n="emptyTitle" class="font-serif text-2xl text-zinc-300">No celestial targets match this query</h3>
+      <p data-i18n="emptyDesc" class="text-xs text-zinc-500 max-w-sm mx-auto mt-2">
+        Try adjusting your search terms or reset filters to display the full astronomical catalog.
+      </p>
+      <button 
+        type="button" 
+        id="resetFiltersBtn" 
+        data-i18n="btnResetFilters"
+        class="mt-5 px-4 py-2 rounded-full text-xs font-medium bg-white/10 text-white hover:bg-white/20 ring-1 ring-white/15"
+      >
+        Reset Filters
+      </button>
+    </div>
+
+    <!-- Active Cards Grid -->
+    <section 
+      id="galleryGrid" 
+      class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      aria-label="Deep-sky celestial objects"
+    >
+      <!-- Cards dynamically rendered via script.js -->
+    </section>
+  </main>
+
+  <!-- =======================================================================
+       3. NAKSHATRA CONSTELLATIONS & CELESTIAL MANSIONS FEATURETTE
+       ======================================================================= -->
+  <section id="constellations" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative z-10 border-t border-white/10">
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-white/5 ring-1 ring-white/10 text-zinc-300 mb-3">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+        <span data-i18n="constellationsBadge">Ancient Sky Maps & Nakshatras</span>
+      </span>
+      <h2 data-i18n="constellationsHeading" class="font-serif text-4xl sm:text-5xl text-zinc-100 tracking-tight">
+        The Celestial Mansions
+      </h2>
+      <p data-i18n="constellationsDesc" class="text-sm text-zinc-400 font-sans mt-3">
+        In Vedic and ancient global astronomy, the night sky is partitioned into the 27 lunar mansions (Nakshatras) and the classical 88 IAU constellations. Select any sector below to inspect its anchor stars and celestial coordinates.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Interactive Constellation Sector Selector -->
+      <div class="lg:col-span-5 space-y-3">
+        
+        <!-- Orion -->
+        <button 
+          type="button" 
+          data-constellation-id="orion"
+          class="w-full text-left p-4 rounded-xl ring-1 ring-white/40 bg-white/10 transition-all hover:bg-white/15 flex items-center justify-between group"
+        >
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-zinc-950 flex items-center justify-center font-mono text-xs text-amber-300">
+              01
+            </div>
+            <div>
+              <div class="text-sm font-medium text-white group-hover:text-amber-200 transition-colors">
+                Orion · <span class="text-zinc-300 font-normal">Mrigashira (မဂ္ဂသီး)</span>
+              </div>
+              <div class="text-xs font-mono text-zinc-400">RA 05h 30m · Dec +00° 00′</div>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-zinc-400 group-hover:translate-x-1 transition-transform"></i>
+        </button>
+
+        <!-- Taurus -->
+        <button 
+          type="button" 
+          data-constellation-id="taurus"
+          class="w-full text-left p-4 rounded-xl ring-1 ring-white/10 bg-white/5 transition-all hover:bg-white/10 flex items-center justify-between group"
+        >
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-zinc-950 flex items-center justify-center font-mono text-xs text-zinc-400">
+              02
+            </div>
+            <div>
+              <div class="text-sm font-medium text-white group-hover:text-amber-200 transition-colors">
+                Taurus · <span class="text-zinc-300 font-normal">Rohini & Krittika (ကြတ္တိကာ)</span>
+              </div>
+              <div class="text-xs font-mono text-zinc-400">RA 04h 30m · Dec +15° 00′</div>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-zinc-400 group-hover:translate-x-1 transition-transform"></i>
+        </button>
+
+        <!-- Cygnus -->
+        <button 
+          type="button" 
+          data-constellation-id="cygnus"
+          class="w-full text-left p-4 rounded-xl ring-1 ring-white/10 bg-white/5 transition-all hover:bg-white/10 flex items-center justify-between group"
+        >
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-zinc-950 flex items-center justify-center font-mono text-xs text-zinc-400">
+              03
+            </div>
+            <div>
+              <div class="text-sm font-medium text-white group-hover:text-amber-200 transition-colors">
+                Cygnus · <span class="text-zinc-300 font-normal">Shravana (သရဝဏ်)</span>
+              </div>
+              <div class="text-xs font-mono text-zinc-400">RA 20h 40m · Dec +42° 00′</div>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-zinc-400 group-hover:translate-x-1 transition-transform"></i>
+        </button>
+
+        <!-- Ursa Major -->
+        <button 
+          type="button" 
+          data-constellation-id="ursa_major"
+          class="w-full text-left p-4 rounded-xl ring-1 ring-white/10 bg-white/5 transition-all hover:bg-white/10 flex items-center justify-between group"
+        >
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-zinc-950 flex items-center justify-center font-mono text-xs text-zinc-400">
+              04
+            </div>
+            <div>
+              <div class="text-sm font-medium text-white group-hover:text-amber-200 transition-colors">
+                Ursa Major · <span class="text-zinc-300 font-normal">Saptarshi (သတ္တရသျှီ)</span>
+              </div>
+              <div class="text-xs font-mono text-zinc-400">RA 11h 00m · Dec +55° 00′</div>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-zinc-400 group-hover:translate-x-1 transition-transform"></i>
+        </button>
+
+        <!-- Scorpius -->
+        <button 
+          type="button" 
+          data-constellation-id="scorpius"
+          class="w-full text-left p-4 rounded-xl ring-1 ring-white/10 bg-white/5 transition-all hover:bg-white/10 flex items-center justify-between group"
+        >
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-zinc-950 flex items-center justify-center font-mono text-xs text-zinc-400">
+              05
+            </div>
+            <div>
+              <div class="text-sm font-medium text-white group-hover:text-amber-200 transition-colors">
+                Scorpius · <span class="text-zinc-300 font-normal">Jyeshtha (ဇေဋ္ဌ)</span>
+              </div>
+              <div class="text-xs font-mono text-zinc-400">RA 16h 50m · Dec -30° 00′</div>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-zinc-400 group-hover:translate-x-1 transition-transform"></i>
+        </button>
+
+      </div>
+
+      <!-- Active Constellation Telemetry Detail Display Card -->
+      <div class="lg:col-span-7">
+        <div id="constellationDetailCard" class="glass-panel rounded-2xl min-h-[380px] relative overflow-hidden">
+          <!-- Rendered via script.js -->
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =======================================================================
+       4. TELEMETRY LIGHTBOX MODAL (Bilingual object telemetry inspector)
+       ======================================================================= -->
+  <div 
+    id="telemetryModal" 
+    class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto hidden" 
+    role="dialog" 
+    aria-modal="true" 
+    aria-labelledby="modalName"
+  >
+    <!-- Backdrop Blur Overlay -->
+    <div id="modalBackdrop" class="fixed inset-0 modal-backdrop opacity-0 transition-opacity duration-300"></div>
+
+    <!-- Modal Content Panel -->
+    <div 
+      id="modalPanel" 
+      class="relative z-10 w-full max-w-4xl glass-panel rounded-2xl md:rounded-3xl shadow-2xl overflow-hidden modal-content-panel opacity-0 scale-95 transition-all duration-300 my-auto bg-zinc-950/95"
+    >
+      <div class="reticle-corner reticle-tl"></div>
+      <div class="reticle-corner reticle-tr"></div>
+      <div class="reticle-corner reticle-bl"></div>
+      <div class="reticle-corner reticle-br"></div>
+
+      <!-- Modal Header Bar -->
+      <div class="p-4 sm:p-6 border-b border-white/10 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span id="modalCatalog" class="px-3 py-1 rounded-full text-xs font-mono font-medium bg-white/10 text-cyan-300 ring-1 ring-white/15">
+            M42 · NGC 1976
+          </span>
+          <span id="modalSubtypeBadge" class="hidden sm:inline-block text-xs font-mono text-zinc-400">
+            Emission Nebula
+          </span>
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <button 
+            type="button" 
+            id="copyCoordsBtn" 
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono text-zinc-300 hover:text-white bg-white/5 hover:bg-white/10 ring-1 ring-white/10 transition-colors"
+            title="Copy celestial coordinates"
+          >
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span data-i18n="btnCopyCoords" class="hidden sm:inline">Copy RA/Dec</span>
+          </button>
+          
+          <button 
+            type="button" 
+            id="modalCloseBtn" 
+            class="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 focus:outline-none transition-colors"
+            aria-label="Close telemetry inspector"
+          >
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body (Two-column layout) -->
+      <div class="grid grid-cols-1 md:grid-cols-12 max-h-[75vh] overflow-y-auto">
+        
+        <!-- Left: Image View & Spectral Filter Selector -->
+        <div class="md:col-span-6 p-4 sm:p-6 flex flex-col justify-between border-b md:border-b-0 md:border-r border-white/10">
+          <div class="relative rounded-xl overflow-hidden aspect-[4/3] bg-zinc-950 ring-1 ring-white/10 mb-4">
+            <img 
+              id="modalImage" 
+              src="" 
+              alt="Deep Sky Celestial Object" 
+              class="w-full h-full object-cover transition-all duration-500"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-transparent to-transparent pointer-events-none"></div>
+            
+            <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] font-mono text-zinc-300 pointer-events-none">
+              <span id="modalConstellationBadge" class="truncate">Orion</span>
+              <span class="text-amber-300 font-medium">J2000 Precision</span>
+            </div>
+          </div>
+
+          <!-- In-Modal Spectrograph Filter Switcher -->
+          <div>
+            <label data-i18n="modalSpectrumLabel" class="block text-[11px] font-mono uppercase tracking-wider text-zinc-400 mb-2">
+              Multi-Spectral Filter View
+            </label>
+            <div class="grid grid-cols-3 gap-2">
+              <button 
+                type="button" 
+                data-modal-spectrum="visible" 
+                data-i18n="modalSpecVisible"
+                class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium bg-white text-zinc-950 transition-colors"
+              >
+                Optical RGB
+              </button>
+              <button 
+                type="button" 
+                data-modal-spectrum="infrared" 
+                data-i18n="modalSpecInfrared"
+                class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium text-zinc-300 hover:text-white bg-white/5 hover:bg-white/10 ring-1 ring-white/10 transition-colors"
+              >
+                Infrared (NIR)
+              </button>
+              <button 
+                type="button" 
+                data-modal-spectrum="xray" 
+                data-i18n="modalSpecXray"
+                class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium text-zinc-300 hover:text-white bg-white/5 hover:bg-white/10 ring-1 ring-white/10 transition-colors"
+              >
+                High Energy
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Telemetry Grid & Scientific Overview -->
+        <div class="md:col-span-6 p-4 sm:p-6 space-y-5">
+          <div>
+            <h3 id="modalName" class="font-serif text-3xl sm:text-4xl text-zinc-100 tracking-tight leading-tight">
+              Object Name
+            </h3>
+            <p id="modalDescription" class="text-xs text-zinc-400 font-sans mt-2 leading-relaxed">
+              Astronomical description and observational summary.
+            </p>
+          </div>
+
+          <!-- Telemetry Metadata Matrix -->
+          <div class="grid grid-cols-2 gap-3 pt-3 border-t border-white/10">
+            <div class="glass-pill p-2.5 rounded-xl">
+              <div data-i18n="modalRaLabel" class="text-[10px] font-mono uppercase text-zinc-400">Right Ascension (RA)</div>
+              <div id="modalRa" class="text-xs font-mono text-zinc-200 font-medium">00h 00m 00s</div>
+            </div>
+            <div class="glass-pill p-2.5 rounded-xl">
+              <div data-i18n="modalDecLabel" class="text-[10px] font-mono uppercase text-zinc-400">Declination (Dec)</div>
+              <div id="modalDec" class="text-xs font-mono text-zinc-200 font-medium">+00° 00′ 00″</div>
+            </div>
+            <div class="glass-pill p-2.5 rounded-xl">
+              <div data-i18n="modalDistLabel" class="text-[10px] font-mono uppercase text-zinc-400">Distance</div>
+              <div id="modalDistance" class="text-xs font-mono text-zinc-200 font-medium">1,344 ly</div>
+            </div>
+            <div class="glass-pill p-2.5 rounded-xl">
+              <div data-i18n="modalMagLabel" class="text-[10px] font-mono uppercase text-zinc-400">Apparent Magnitude</div>
+              <div id="modalMagnitude" class="text-xs font-mono text-zinc-200 font-medium">4.0</div>
+            </div>
+            <div class="glass-pill p-2.5 rounded-xl">
+              <div data-i18n="modalDimLabel" class="text-[10px] font-mono uppercase text-zinc-400">Apparent Dimensions</div>
+              <div id="modalDimensions" class="text-xs font-mono text-zinc-200 font-medium">65′ × 60′</div>
+            </div>
+            <div class="glass-pill p-2.5 rounded-xl">
+              <div data-i18n="modalDiamLabel" class="text-[10px] font-mono uppercase text-zinc-400">Physical Diameter</div>
+              <div id="modalDiameter" class="text-xs font-mono text-zinc-200 font-medium">24 ly</div>
+            </div>
+          </div>
+
+          <!-- Extended Field Data -->
+          <div class="space-y-2 pt-2 text-xs font-mono border-t border-white/5">
+            <div class="flex items-start justify-between gap-4">
+              <span data-i18n="modalDiscoveredLabel" class="text-zinc-400">Discovered:</span>
+              <span id="modalDiscovered" class="text-zinc-200 text-right font-sans">Nicolas-Claude Fabri de Peiresc (1610)</span>
+            </div>
+            <div class="flex items-start justify-between gap-4">
+              <span data-i18n="modalObsLabel" class="text-zinc-400">Observatories:</span>
+              <span id="modalInstruments" class="text-zinc-200 text-right font-sans">Hubble / JWST</span>
+            </div>
+            <div class="flex items-start justify-between gap-4">
+              <span data-i18n="modalSeasonLabel" class="text-zinc-400">Prime Viewing:</span>
+              <span id="modalBestSeason" class="text-zinc-200 text-right font-sans">December – March</span>
+            </div>
+            <div class="flex items-start justify-between gap-4">
+              <span data-i18n="modalGearLabel" class="text-zinc-400">Recommended Gear:</span>
+              <span id="modalEquipment" class="text-zinc-200 text-right font-sans">80mm+ refractor</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div 
+    id="copyToast" 
+    class="fixed bottom-6 right-6 z-50 px-4 py-2.5 rounded-xl text-xs font-mono bg-zinc-900/90 text-white border border-white/20 backdrop-blur-md shadow-2xl opacity-0 translate-y-2 pointer-events-none transition-all duration-300"
+    role="status" 
+    aria-live="polite"
+  >
+    Coordinates copied to clipboard
+  </div>
+
+  <!-- =======================================================================
+       5. FOOTER
+       ======================================================================= -->
+  <footer class="border-t border-white/10 bg-zinc-950 py-12 px-4 sm:px-6 lg:px-8 relative z-10 text-xs text-zinc-400">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      
+      <!-- Brand & Copyright -->
+      <div class="flex items-center gap-3">
+        <div class="w-7 h-7 rounded-full bg-white/10 ring-1 ring-white/20 flex items-center justify-center">
+          <i data-lucide="compass" class="w-3.5 h-3.5 text-zinc-300"></i>
+        </div>
+        <div>
+          <span data-i18n="footerTitle" class="text-zinc-200 font-medium">Nakshatra Sky Atlas</span>
+          <span class="text-zinc-600 mx-2">·</span>
+          <span data-i18n="footerSub">Open Astronomical Telemetry Standard</span>
+        </div>
+      </div>
+
+      <!-- Links & Specs -->
+      <div class="flex flex-wrap items-center justify-center gap-6 text-zinc-400">
+        <a href="#hero" data-i18n="navSkyMap" class="hover:text-white transition-colors">Sky Map</a>
+        <a href="#gallery" data-i18n="navGallery" class="hover:text-white transition-colors">Catalog Grid</a>
+        <a href="#constellations" data-i18n="navConstellations" class="hover:text-white transition-colors">Mansions</a>
+        <a href="#observatories" data-i18n="navObservatories" class="hover:text-white transition-colors">Observatories</a>
+      </div>
+
+      <!-- Epoch standard note -->
+      <div data-i18n="footerEpoch" class="font-mono text-[11px] text-zinc-400 text-center md:text-right">
+        J2000.0 Coordinate System · IAU 1930 Boundaries
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Script -->
+  <script src="script.js"></script>
+</body>
+</html>

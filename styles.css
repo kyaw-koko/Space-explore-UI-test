@@ -1,0 +1,344 @@
+/* ==========================================================================
+   NAKSHATRA SKY / နက္ခတ္တ ကောင်းကင်ပြတိုက်
+   Bilingual Design System, Glassmorphism & Typography Engine
+   ========================================================================== */
+
+/* Pyidaungsu & Unicode Myanmar Font Loading */
+@font-face {
+  font-family: "Pyidaungsu";
+  src: local("Pyidaungsu"),
+       local("Pyidaungsu Regular"),
+       url("https://cdn.jsdelivr.net/gh/silinternational/font-padauk@master/web/Padauk-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Pyidaungsu";
+  src: local("Pyidaungsu Bold"),
+       url("https://cdn.jsdelivr.net/gh/silinternational/font-padauk@master/web/Padauk-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg-cosmos: #09090b;
+  --bg-obsidian: #0e0e12;
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-bg-hover: rgba(255, 255, 255, 0.07);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-border-hover: rgba(255, 255, 255, 0.22);
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  
+  /* English Typography */
+  --font-serif: "Instrument Serif", Georgia, serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Myanmar Typography */
+  --font-myanmar: "Pyidaungsu", "Noto Sans Myanmar", "Padauk", sans-serif;
+  --font-myanmar-serif: "Noto Serif Myanmar", "Pyidaungsu", serif;
+}
+
+/* Base resets & typography */
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-cosmos);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-cosmos);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ==========================================================================
+   MYANMAR SCRIPT ENHANCEMENTS & PREVENT CLIPPING
+   Ensures top/bottom diacritics and subjoined consonants never clip
+   ========================================================================== */
+html[lang="my"] {
+  font-family: var(--font-myanmar);
+  line-height: 1.75;
+}
+
+html[lang="my"] body {
+  font-family: var(--font-myanmar);
+}
+
+html[lang="my"] .font-serif,
+html[lang="my"] .hero-display-title {
+  font-family: var(--font-myanmar-serif);
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+
+html[lang="my"] h1,
+html[lang="my"] h2,
+html[lang="my"] h3 {
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+html[lang="my"] p,
+html[lang="my"] span,
+html[lang="my"] a,
+html[lang="my"] button,
+html[lang="my"] input,
+html[lang="my"] select {
+  line-height: 1.7;
+}
+
+/* Extra vertical breathing room for buttons & pills in Myanmar mode */
+html[lang="my"] .glass-pill,
+html[lang="my"] button,
+html[lang="my"] .nav-link-pill {
+  padding-top: calc(0.375rem + 2px);
+  padding-bottom: calc(0.375rem + 2px);
+}
+
+html[lang="my"] .py-1 {
+  padding-top: 0.35rem !important;
+  padding-bottom: 0.35rem !important;
+}
+
+html[lang="my"] .py-1\.5 {
+  padding-top: 0.45rem !important;
+  padding-bottom: 0.45rem !important;
+}
+
+html[lang="my"] .py-2 {
+  padding-top: 0.55rem !important;
+  padding-bottom: 0.55rem !important;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #09090b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* Utility Font Classes */
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" on, "zero" on;
+}
+
+.hero-display-title {
+  font-family: var(--font-serif);
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+}
+
+/* Glassmorphism System */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.08), 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel-hover:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.15), 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 255, 255, 0.03);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-pill:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+/* Language Switcher Active Indicator */
+.lang-btn {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lang-btn.active {
+  background-color: #ffffff;
+  color: #09090b;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.lang-btn:not(.active) {
+  color: #a1a1aa;
+}
+
+.lang-btn:not(.active):hover {
+  color: #ffffff;
+}
+
+/* Atmospheric Vignettes & Overlays */
+.celestial-vignette {
+  background: radial-gradient(circle at 50% 30%, rgba(9, 9, 11, 0.2) 0%, rgba(9, 9, 11, 0.85) 75%, #09090b 100%),
+              linear-gradient(to bottom, rgba(9, 9, 11, 0.5) 0%, transparent 35%, rgba(9, 9, 11, 0.7) 70%, #09090b 100%);
+}
+
+.nebula-glow-overlay {
+  background: radial-gradient(800px circle at 50% -10%, rgba(120, 119, 198, 0.12), transparent 70%);
+}
+
+/* Ambient Starfield Texture */
+.starfield-texture {
+  background-image: 
+    radial-gradient(1px 1px at 25px 35px, rgba(255, 255, 255, 0.6) 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 120px 80px, rgba(255, 255, 255, 0.8) 50%, transparent 100%),
+    radial-gradient(1px 1px at 240px 180px, rgba(255, 255, 255, 0.5) 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 380px 290px, rgba(255, 255, 255, 0.7) 50%, transparent 100%),
+    radial-gradient(1px 1px at 500px 70px, rgba(255, 255, 255, 0.6) 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 620px 220px, rgba(255, 255, 255, 0.9) 50%, transparent 100%),
+    radial-gradient(1px 1px at 780px 140px, rgba(255, 255, 255, 0.4) 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 940px 310px, rgba(255, 255, 255, 0.8) 50%, transparent 100%);
+  background-size: 1000px 400px;
+}
+
+/* Staggered Animations */
+@keyframes fadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-slide {
+  animation: fadeSlideIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.anim-delay-1 { animation-delay: 0.1s; }
+.anim-delay-2 { animation-delay: 0.22s; }
+.anim-delay-3 { animation-delay: 0.34s; }
+.anim-delay-4 { animation-delay: 0.46s; }
+.anim-delay-5 { animation-delay: 0.58s; }
+
+/* Wavelength Crossfade Backgrounds */
+.wavelength-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center 35%;
+  transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.wavelength-layer.active {
+  opacity: 1;
+  transform: scale(1);
+  z-index: 1;
+}
+
+.wavelength-layer.inactive {
+  opacity: 0;
+  transform: scale(1.04);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Interactive Card Image Zoom */
+.card-image-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-image-wrap img {
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), filter 0.65s ease;
+}
+
+.group:hover .card-image-wrap img {
+  transform: scale(1.06);
+}
+
+/* Modal Lightbox Backdrop & Animations */
+.modal-backdrop {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background-color: rgba(9, 9, 11, 0.88);
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-content-panel {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+}
+
+/* Optical Reticle Decor */
+.reticle-corner {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-color: rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+}
+
+.reticle-tl { top: 8px; left: 8px; border-top: 1px solid; border-left: 1px solid; }
+.reticle-tr { top: 8px; right: 8px; border-top: 1px solid; border-right: 1px solid; }
+.reticle-bl { bottom: 8px; left: 8px; border-bottom: 1px solid; border-left: 1px solid; }
+.reticle-br { bottom: 8px; right: 8px; border-bottom: 1px solid; border-right: 1px solid; }
+
+/* Focus styles for keyboard accessibility */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 3px;
+}
+
+/* Reduced Motion Preference Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
